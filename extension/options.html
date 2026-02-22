@@ -285,10 +285,11 @@
         </div>
 
         <div class="actions">
-            <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
-            <button class="btn btn-ghost" onclick="testConnection()">🔌 Test Connection</button>
+            <button class="btn btn-primary" id="saveBtn" onclick="saveSettings()">💾 Save Settings</button>
+            <button class="btn btn-ghost" id="testBtn" onclick="testConnection()">🔌 Test Connection</button>
             <button class="btn btn-danger" onclick="clearData()">🗑 Clear Local Data</button>
         </div>
+        <div id="saveStatus" style="margin-top:14px;font-size:13px;font-weight:600;min-height:20px;"></div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -311,31 +312,57 @@
             const apiKey = document.getElementById('apiKey').value.trim();
             const senderEmail = document.getElementById('senderEmail').value.trim();
             const retentionDays = document.getElementById('retentionDays').value;
+            const status = document.getElementById('saveStatus');
+            const btn = document.getElementById('saveBtn');
 
             if (!serverUrl || !apiKey || !senderEmail) {
-                showToast('Please fill in Server URL, API Key, and Gmail address.', 'err');
+                status.style.color = '#f85149';
+                status.textContent = '⚠️ Please fill in Server URL, API Key, and Gmail address.';
                 return;
             }
 
             chrome.storage.sync.set({ serverUrl, apiKey, senderEmail, retentionDays }, () => {
-                showToast('Settings saved ✓', 'ok');
+                status.style.color = '#3fb950';
+                status.textContent = '✅ Settings saved! You can close this tab.';
+                btn.textContent = '✓ Saved';
+                btn.style.background = '#238636';
+                setTimeout(() => {
+                    btn.textContent = '💾 Save Settings';
+                    btn.style.background = '';
+                }, 3000);
             });
         }
 
         async function testConnection() {
             const serverUrl = document.getElementById('serverUrl').value.trim().replace(/\/$/, '');
             const apiKey = document.getElementById('apiKey').value.trim();
-            if (!serverUrl || !apiKey) { showToast('Enter Server URL and API Key first', 'err'); return; }
+            const status = document.getElementById('saveStatus');
+            const btn = document.getElementById('testBtn');
+            if (!serverUrl || !apiKey) {
+                status.style.color = '#f85149';
+                status.textContent = '⚠️ Enter Server URL and API Key first';
+                return;
+            }
+            btn.textContent = '⏳ Connecting…';
+            btn.disabled = true;
+            status.style.color = '#8b949e';
+            status.textContent = 'Waking up server (may take 30s on free tier)…';
             try {
                 const res = await fetch(`${serverUrl}/health`);
                 if (res.ok) {
                     const data = await res.json();
-                    showToast(`✓ Connected! Server time: ${new Date(data.time).toLocaleTimeString()}`, 'ok');
+                    status.style.color = '#3fb950';
+                    status.textContent = `✅ Connected! Server is live.`;
                 } else {
-                    showToast(`Server returned ${res.status}`, 'err');
+                    status.style.color = '#f85149';
+                    status.textContent = `❌ Server returned ${res.status}. Check your URL.`;
                 }
             } catch (e) {
-                showToast('Connection failed: ' + e.message, 'err');
+                status.style.color = '#f85149';
+                status.textContent = `❌ Connection failed: ${e.message}`;
+            } finally {
+                btn.textContent = '🔌 Test Connection';
+                btn.disabled = false;
             }
         }
 
