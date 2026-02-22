@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Email Tracker — Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #1a73e8;
+            --green: #3fb950;
+            --danger: #f85149;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text2);
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+
+        .field-hint a {
+            color: var(--accent);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="url"],
+        input[type="email"] {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        input::placeholder {
+            color: var(--text2);
+        }
+
+        select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 9px 20px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-ghost {
+            background: var(--bg3);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+        }
+
+        .btn-danger {
+            background: rgba(248, 81, 73, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 99;
+            transform: translateY(60px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.ok {
+            background: #1a3a1f;
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .toast.err {
+            background: #3d0000;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .info-box {
+            background: rgba(26, 115, 232, 0.08);
+            border: 1px solid rgba(26, 115, 232, 0.25);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text2);
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: var(--text);
+        }
+
+        .info-box ol {
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="logo">
+            <div class="logo-icon">📬</div>
+            Email Tracker Settings
+        </div>
+
+        <div class="info-box">
+            <strong>First-time setup?</strong> Follow these steps:
+            <ol>
+                <li>Deploy the server to <a href="https://render.com" target="_blank"
+                        style="color:var(--accent)">Render.com</a> (free) — see <code>server/render.yaml</code></li>
+                <li>Copy your Render URL and the generated API key from Render's dashboard</li>
+                <li>Fill in the fields below and click Save — that's it!</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🖥️ Server Configuration</div>
+
+            <div class="field">
+                <label for="serverUrl">Tracking Server URL</label>
+                <input type="url" id="serverUrl" placeholder="https://email-tracker.onrender.com" />
+                <div class="field-hint">Your Render deployment URL (no trailing slash)</div>
+            </div>
+
+            <div class="field">
+                <label for="apiKey">API Key</label>
+                <input type="password" id="apiKey" placeholder="Paste your API key here" />
+                <div class="field-hint">Find this in Render → your service → Environment → API_KEY</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">✉️ Your Gmail Address</div>
+            <div class="field">
+                <label for="senderEmail">Gmail Address</label>
+                <input type="email" id="senderEmail" placeholder="you@gmail.com" />
+                <div class="field-hint">The Gmail you send tracked emails from. Used for display in the dashboard.</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">⚙️ Preferences</div>
+            <div class="field">
+                <label for="retentionDays">Data Retention</label>
+                <select id="retentionDays">
+                    <option value="3">3 days</option>
+                    <option value="7" selected>7 days (recommended)</option>
+                    <option value="14">14 days</option>
+                    <option value="30">30 days</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+            <button class="btn btn-ghost" onclick="testConnection()">🔌 Test Connection</button>
+            <button class="btn btn-danger" onclick="clearData()">🗑 Clear Local Data</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Load saved settings on page open
+        document.addEventListener('DOMContentLoaded', () => {
+            chrome.storage.sync.get({
+                serverUrl: '', apiKey: '', senderEmail: '', retentionDays: '7'
+            }, (s) => {
+                document.getElementById('serverUrl').value = s.serverUrl;
+                document.getElementById('apiKey').value = s.apiKey;
+                document.getElementById('senderEmail').value = s.senderEmail;
+                document.getElementById('retentionDays').value = s.retentionDays;
+            });
+        });
+
+        function saveSettings() {
+            const serverUrl = document.getElementById('serverUrl').value.trim().replace(/\/$/, '');
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const senderEmail = document.getElementById('senderEmail').value.trim();
+            const retentionDays = document.getElementById('retentionDays').value;
+
+            if (!serverUrl || !apiKey || !senderEmail) {
+                showToast('Please fill in Server URL, API Key, and Gmail address.', 'err');
+                return;
+            }
+
+            chrome.storage.sync.set({ serverUrl, apiKey, senderEmail, retentionDays }, () => {
+                showToast('Settings saved ✓', 'ok');
+            });
+        }
+
+        async function testConnection() {
+            const serverUrl = document.getElementById('serverUrl').value.trim().replace(/\/$/, '');
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!serverUrl || !apiKey) { showToast('Enter Server URL and API Key first', 'err'); return; }
+            try {
+                const res = await fetch(`${serverUrl}/health`);
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`✓ Connected! Server time: ${new Date(data.time).toLocaleTimeString()}`, 'ok');
+                } else {
+                    showToast(`Server returned ${res.status}`, 'err');
+                }
+            } catch (e) {
+                showToast('Connection failed: ' + e.message, 'err');
+            }
+        }
+
+        function clearData() {
+            if (!confirm('This will delete all locally cached email data. The server data is unaffected. Continue?')) return;
+            chrome.storage.local.remove('emails', () => showToast('Local data cleared', 'ok'));
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+    </script>
+</body>
+
+</html>

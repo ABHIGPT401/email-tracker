@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Email Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #1a73e8;
+            --green: #3fb950;
+            --read-blue: #58a6ff;
+            --sent-gray: #8b949e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            width: 340px;
+            min-height: 400px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0d1117, #1a2332);
+            padding: 14px 16px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text2);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .icon-btn:hover {
+            color: var(--text);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 14px;
+        }
+
+        .stat {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .val-total {
+            color: var(--text);
+        }
+
+        .val-read {
+            color: var(--read-blue);
+        }
+
+        .val-sent {
+            color: var(--sent-gray);
+        }
+
+        .val-today {
+            color: var(--green);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 14px;
+        }
+
+        .email-list {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .email-item {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .email-item:hover {
+            background: var(--bg2);
+        }
+
+        .email-item:last-child {
+            border-bottom: none;
+        }
+
+        .tick {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            min-width: 22px;
+        }
+
+        .tick.read {
+            color: var(--read-blue);
+        }
+
+        .tick.sent {
+            color: var(--sent-gray);
+        }
+
+        .email-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .email-recipient {
+            font-size: 12px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .email-subject {
+            font-size: 11px;
+            color: var(--text2);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 1px;
+        }
+
+        .email-time {
+            font-size: 11px;
+            color: var(--text2);
+            white-space: nowrap;
+        }
+
+        .empty {
+            padding: 40px 16px;
+            text-align: center;
+            color: var(--text2);
+            font-size: 13px;
+        }
+
+        .empty .e {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        footer {
+            padding: 10px 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 7px 0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-ghost {
+            background: var(--bg3);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">📬</div>
+            Email Tracker
+        </div>
+        <div class="header-btns">
+            <button class="icon-btn" onclick="openSettings()">⚙️</button>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total</div>
+            <div class="stat-value val-total" id="sTotal">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Read</div>
+            <div class="stat-value val-read" id="sRead">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Unopened</div>
+            <div class="stat-value val-sent" id="sSent">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Today</div>
+            <div class="stat-value val-today" id="sToday">—</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="email-list" id="emailList">
+        <div class="empty">
+            <div class="e">📭</div>No emails yet
+        </div>
+    </div>
+
+    <footer>
+        <button class="btn btn-ghost" id="syncBtn" onclick="sync()">🔄 Sync</button>
+        <button class="btn btn-primary" onclick="openDashboard()">Open Dashboard</button>
+    </footer>
+
+    <script>
+        async function loadEmails() {
+            const data = await new Promise(r => chrome.storage.local.get('emails', r));
+            const emails = (data.emails || []).sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+            const today = new Date().toDateString();
+
+            document.getElementById('sTotal').textContent = emails.length;
+            document.getElementById('sRead').textContent = emails.filter(e => e.open_count > 0).length;
+            document.getElementById('sSent').textContent = emails.filter(e => !e.open_count || e.open_count == 0).length;
+            document.getElementById('sToday').textContent = emails.filter(e => new Date(e.sent_at).toDateString() === today).length;
+
+            const list = document.getElementById('emailList');
+            if (!emails.length) {
+                list.innerHTML = '<div class="empty"><div class="e">📭</div>No emails yet</div>';
+                return;
+            }
+
+            list.innerHTML = emails.slice(0, 20).map(e => {
+                const isRead = e.open_count > 0;
+                const time = new Date(e.sent_at);
+                const now = new Date();
+                const timeStr = time.toDateString() === now.toDateString()
+                    ? time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+                    : time.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                return `<div class="email-item" onclick="openDashboard()">
+          <span class="tick ${isRead ? 'read' : 'sent'}">${isRead ? '✓✓' : '✓'}</span>
+          <div class="email-meta">
+            <div class="email-recipient">${esc(e.recipient)}</div>
+            <div class="email-subject">${esc(e.subject)}</div>
+          </div>
+          <div class="email-time">${timeStr}</div>
+        </div>`;
+            }).join('');
+        }
+
+        async function sync() {
+            const btn = document.getElementById('syncBtn');
+            btn.disabled = true;
+            btn.textContent = '…';
+            await new Promise(r => chrome.runtime.sendMessage({ type: 'SYNC_NOW' }, r));
+            await loadEmails();
+            btn.disabled = false;
+            btn.textContent = '🔄 Sync';
+        }
+
+        function openDashboard() {
+            chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
+        }
+
+        function openSettings() { chrome.runtime.openOptionsPage(); }
+
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        loadEmails();
+    </script>
+</body>
+
+</html>

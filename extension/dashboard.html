@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Tracker — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text2: #8b949e;
+      --accent: #1a73e8;
+      --accent2: #0d5bcb;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --read-blue: #58a6ff;
+      --sent-gray: #8b949e;
+      --danger: #f85149;
+      --gold: #d29922;
+      --radius: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sync-info {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      padding: 24px 32px 0;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+
+    .stat-label { font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+
+    .stat-value.total { color: var(--text); }
+    .stat-value.sent { color: var(--sent-gray); }
+    .stat-value.read { color: var(--read-blue); }
+    .stat-value.today { color: var(--green); }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 32px;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .search-box {
+      margin-left: auto;
+      position: relative;
+    }
+    .search-box input {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px 6px 32px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      width: 200px;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { outline: none; border-color: var(--accent); }
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    /* ── Table ── */
+    .table-container {
+      padding: 0 32px 32px;
+    }
+
+    .table-wrapper {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead { background: var(--bg3); }
+    th {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text2);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(88,166,255,0.04); }
+
+    td {
+      padding: 14px 16px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    /* Status tick */
+    .status-tick {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -2px;
+    }
+    .tick-sent { color: var(--sent-gray); }
+    .tick-read { color: var(--read-blue); }
+
+    .recipient { font-weight: 500; }
+    .subject { color: var(--text2); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .time { color: var(--text2); font-size: 13px; white-space: nowrap; }
+
+    .open-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .open-badge.opened { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
+    .open-badge.unopened { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text2);
+    }
+    .empty-state .emoji { font-size: 48px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── Slide-out panel ── */
+    .panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .panel-overlay.open { opacity: 1; pointer-events: all; }
+
+    .panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      width: 420px;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel.open { transform: translateX(0); }
+
+    .panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-title { font-size: 16px; font-weight: 600; }
+    .panel-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+    .close-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text2);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .close-btn:hover { color: var(--text); }
+
+    .panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+
+    .panel-info { margin-bottom: 20px; }
+    .info-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+    .info-label { color: var(--text2); min-width: 80px; }
+    .info-val { font-weight: 500; }
+
+    .opens-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text2);
+      margin-bottom: 12px;
+    }
+
+    .open-event {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .open-event-icon { font-size: 20px; }
+    .open-event-time { font-size: 13px; font-weight: 500; }
+    .open-event-device { font-size: 12px; color: var(--text2); }
+
+    .no-opens {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text2);
+      font-size: 14px;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .syncing { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+
+    /* Notification toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 300;
+      transform: translateY(60px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.ok { background: var(--green-dim); color: #fff; border: 1px solid var(--green); }
+    .toast.err { background: #3d0000; color: var(--danger); border: 1px solid var(--danger); }
+
+    /* Config warning banner */
+    .warning-banner {
+      margin: 0 32px;
+      padding: 12px 16px;
+      background: rgba(210,153,34,0.1);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .warning-banner a { color: var(--gold); font-weight: 600; }
+    .warning-banner.hidden { display: none; }
+
+    @media (max-width: 768px) {
+      header, .stats-bar, .filters, .table-container { padding-left: 16px; padding-right: 16px; }
+      .panel { width: 100vw; }
+      .stats-bar { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📬</div>
+      Email Tracker
+    </div>
+    <div class="header-actions">
+      <div class="sync-info" id="syncInfo">Never synced</div>
+      <button class="btn btn-ghost" onclick="openOptions()">⚙️ Settings</button>
+      <button class="btn btn-primary" id="syncBtn" onclick="syncNow()">🔄 Sync</button>
+    </div>
+  </header>
+
+  <div class="warning-banner hidden" id="configWarning">
+    ⚠️ Extension not configured. <a href="#" onclick="openOptions()">Open Settings →</a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-label">Total Sent</div><div class="stat-value total" id="statTotal">—</div></div>
+    <div class="stat-card"><div class="stat-label">Unopened</div><div class="stat-value sent" id="statUnopened">—</div></div>
+    <div class="stat-card"><div class="stat-label">Read</div><div class="stat-value read" id="statRead">—</div></div>
+    <div class="stat-card"><div class="stat-label">Sent Today</div><div class="stat-value today" id="statToday">—</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('unread', this)">Unopened</button>
+    <button class="filter-btn" onclick="setFilter('read', this)">Read</button>
+    <button class="filter-btn" onclick="setFilter('today', this)">Today</button>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search recipient or subject…" oninput="renderTable()" />
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:48px">Status</th>
+            <th>Recipient</th>
+            <th>Subject</th>
+            <th>Sent</th>
+            <th>Opens</th>
+            <th>Last Opened</th>
+          </tr>
+        </thead>
+        <tbody id="emailTableBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="emoji">📭</div>
+        <h3>No emails yet</h3>
+        <p>Send a Gmail and it will appear here after syncing.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-out panel -->
+  <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title" id="panelTitle">Email Details</div>
+        <div class="panel-sub" id="panelSub"></div>
+      </div>
+      <button class="close-btn" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-info" id="panelInfo"></div>
+      <div class="opens-title">Open History</div>
+      <div id="opensList"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── State ──
+    let allEmails = [];
+    let currentFilter = 'all';
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkConfig();
+      await loadFromStorage();
+      syncNow();
+      // Auto-sync when tab gains focus
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) syncNow();
+      });
+    });
+
+    async function checkConfig() {
+      const s = await new Promise(r => chrome.storage.sync.get({ serverUrl: '', apiKey: '' }, r));
+      if (!s.serverUrl || !s.apiKey) {
+        document.getElementById('configWarning').classList.remove('hidden');
+      }
+    }
+
+    // ── Load from storage ──
+    async function loadFromStorage() {
+      const data = await new Promise(r => chrome.storage.local.get(['emails', 'lastSync'], r));
+      allEmails = (data.emails || []).sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+      updateStats();
+      renderTable();
+      if (data.lastSync) {
+        updateSyncInfo(new Date(data.lastSync));
+      }
+    }
+
+    // ── Sync ──
+    async function syncNow() {
+      const btn = document.getElementById('syncBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Syncing…';
+      try {
+        await new Promise((res, rej) => {
+          chrome.runtime.sendMessage({ type: 'SYNC_NOW' }, resp => {
+            if (resp && resp.ok) res();
+            else rej(new Error(resp && resp.error || 'Sync failed'));
+          });
+        });
+        await loadFromStorage();
+        showToast('Synced ✓', 'ok');
+      } catch (err) {
+        showToast('Sync failed: ' + err.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Sync';
+      }
+    }
+
+    function updateSyncInfo(date) {
+      const diff = Math.round((Date.now() - date.getTime()) / 60000);
+      document.getElementById('syncInfo').textContent =
+        diff < 1 ? 'Last synced: just now' : `Last synced: ${diff}m ago`;
+    }
+
+    // ── Stats ──
+    function updateStats() {
+      const today = new Date().toDateString();
+      document.getElementById('statTotal').textContent = allEmails.length;
+      document.getElementById('statUnopened').textContent = allEmails.filter(e => !e.open_count || e.open_count == 0).length;
+      document.getElementById('statRead').textContent = allEmails.filter(e => e.open_count > 0).length;
+      document.getElementById('statToday').textContent = allEmails.filter(e => new Date(e.sent_at).toDateString() === today).length;
+    }
+
+    // ── Filters ──
+    function setFilter(filter, el) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      renderTable();
+    }
+
+    function getFilteredEmails() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const today = new Date().toDateString();
+      return allEmails.filter(e => {
+        const matchSearch = !query ||
+          e.recipient.toLowerCase().includes(query) ||
+          e.subject.toLowerCase().includes(query);
+        const matchFilter =
+          currentFilter === 'all' ||
+          (currentFilter === 'unread' && (!e.open_count || e.open_count == 0)) ||
+          (currentFilter === 'read' && e.open_count > 0) ||
+          (currentFilter === 'today' && new Date(e.sent_at).toDateString() === today);
+        return matchSearch && matchFilter;
+      });
+    }
+
+    // ── Table render ──
+    function renderTable() {
+      const emails = getFilteredEmails();
+      const tbody = document.getElementById('emailTableBody');
+      const empty = document.getElementById('emptyState');
+
+      if (!emails.length) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      tbody.innerHTML = emails.map(e => {
+        const isRead = e.open_count > 0;
+        const tick = isRead
+          ? '<span class="status-tick tick-read">✓✓</span>'
+          : '<span class="status-tick tick-sent">✓</span>';
+        const openBadge = isRead
+          ? `<span class="open-badge opened">👁 ${e.open_count}</span>`
+          : `<span class="open-badge unopened">—</span>`;
+        const lastOpened = e.last_opened_at
+          ? formatTime(e.last_opened_at)
+          : '<span style="color:var(--text2)">—</span>';
+
+        return `<tr onclick="openPanel('${e.id}')">
+          <td>${tick}</td>
+          <td class="recipient">${escHtml(e.recipient)}</td>
+          <td class="subject">${escHtml(e.subject)}</td>
+          <td class="time">${formatTime(e.sent_at)}</td>
+          <td>${openBadge}</td>
+          <td class="time">${lastOpened}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Panel ──
+    async function openPanel(emailId) {
+      const email = allEmails.find(e => e.id === emailId);
+      if (!email) return;
+
+      document.getElementById('panelTitle').textContent = escHtml(email.subject);
+      document.getElementById('panelSub').textContent = `To: ${email.recipient}`;
+      document.getElementById('panelInfo').innerHTML = `
+        <div class="info-row"><span class="info-label">Recipient</span><span class="info-val">${escHtml(email.recipient)}</span></div>
+        <div class="info-row"><span class="info-label">Subject</span><span class="info-val">${escHtml(email.subject)}</span></div>
+        <div class="info-row"><span class="info-label">Sent</span><span class="info-val">${formatTimeFull(email.sent_at)}</span></div>
+        <div class="info-row"><span class="info-label">Status</span><span class="info-val">${email.open_count > 0 ? '✓✓ Read' : '✓ Sent'}</span></div>
+        <div class="info-row"><span class="info-label">Opens</span><span class="info-val">${email.open_count || 0}</span></div>
+      `;
+
+      // Fetch open history from server
+      const opensList = document.getElementById('opensList');
+      opensList.innerHTML = '<div class="no-opens"><span class="spinner"></span></div>';
+
+      document.getElementById('panel').classList.add('open');
+      document.getElementById('overlay').classList.add('open');
+
+      try {
+        const s = await new Promise(r => chrome.storage.sync.get({ serverUrl: '', apiKey: '' }, r));
+        const res = await fetch(`${s.serverUrl}/api/emails/${emailId}/opens`, {
+          headers: { 'x-api-key': s.apiKey }
+        });
+        const { opens } = await res.json();
+
+        if (!opens || !opens.length) {
+          opensList.innerHTML = '<div class="no-opens">📭 Not opened yet</div>';
+          return;
+        }
+
+        opensList.innerHTML = opens.map((o, i) => {
+          const device = getDevice(o.user_agent);
+          return `<div class="open-event">
+            <div class="open-event-icon">${device.icon}</div>
+            <div>
+              <div class="open-event-time">${formatTimeFull(o.opened_at)}</div>
+              <div class="open-event-device">${device.label}</div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (err) {
+        opensList.innerHTML = `<div class="no-opens" style="color:var(--danger)">Failed to load opens</div>`;
+      }
+    }
+
+    function closePanel() {
+      document.getElementById('panel').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+
+    // ── Helpers ──
+    function formatTime(iso) {
+      const d = new Date(iso);
+      const now = new Date();
+      const isToday = d.toDateString() === now.toDateString();
+      if (isToday) return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
+
+    function formatTimeFull(iso) {
+      return new Date(iso).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+    }
+
+    function getDevice(ua) {
+      if (!ua) return { icon: '❓', label: 'Unknown' };
+      if (/mobile|android|iphone|ipad/i.test(ua)) return { icon: '📱', label: 'Mobile' };
+      if (/tablet/i.test(ua)) return { icon: '📱', label: 'Tablet' };
+      return { icon: '💻', label: 'Desktop' };
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function openOptions() {
+      chrome.runtime.openOptionsPage();
+    }
+  </script>
+</body>
+</html>

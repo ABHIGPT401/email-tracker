@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Database file (don't commit tracking data)
+*.db
+*.db-wal
+*.db-shm
+
+# Environment secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
